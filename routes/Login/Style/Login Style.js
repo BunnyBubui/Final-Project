@@ -8,6 +8,7 @@ const loginStyle = StyleSheet.create({
     justifyContent: 'center',
     padding: 16,
   },
+
   card: { 
     width: '92%',
     maxWidth: 560,
@@ -21,6 +22,7 @@ const loginStyle = StyleSheet.create({
     shadowRadius: 10,
     elevation: 6,
   },
+
   title: {
     fontSize: 18,
     fontWeight: '800',
@@ -28,15 +30,18 @@ const loginStyle = StyleSheet.create({
     color: '#111',
     marginBottom: 12,
   },
+
   group: { 
     marginBottom: 12,
   },
+
   label: {  
     fontSize: 14,
     fontWeight: '600',
     marginBottom: 4,
     color: '#111',
   },
+
   input: {   
     backgroundColor: '#F3F4F6',
     borderRadius: 12,
@@ -46,6 +51,7 @@ const loginStyle = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E5E7EB',
   },
+
   btn: {
     backgroundColor: '#000',
     borderRadius: 12,
@@ -53,11 +59,13 @@ const loginStyle = StyleSheet.create({
     alignItems: 'center',
     marginTop: 6,
   },
+
   btnText: {  
     color: '#fff',
     fontWeight: '800',
     fontSize: 15,
   },
+
   error: {  
     marginTop: 4,
     marginBottom: 8,
@@ -65,11 +73,13 @@ const loginStyle = StyleSheet.create({
     fontSize: 13,
     textAlign: 'center',
   },
+
   row: { 
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 14,
   },
+
   rowBtn: {   
     backgroundColor: '#111',
     borderRadius: 12,
@@ -77,6 +87,7 @@ const loginStyle = StyleSheet.create({
     paddingHorizontal: 14,
     marginLeft: 8,
   },
+  
   rowText: { 
     color: '#fff',
     fontWeight: '700',
