@@ -46,7 +46,7 @@ export default function Sign({ navigation }) {
           {role === "customer" ? "Register as Customer" : "Register as Worker"}
         </Text>
         <Pressable style={({pressed}) => [{opacity: pressed? 0.6 : 1}]} onPress={() => navigation.navigate("Login")}>
-          <Text style={loginStyle.p}>Already Registered? Log in here.</Text>
+          <Text style={[loginStyle.p, {textDecorationLine: "underline"}]}>Already Registered? Log in here.</Text>
         </Pressable>
 
         <View style={loginStyle.card}>

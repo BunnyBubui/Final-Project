@@ -101,7 +101,7 @@ function Login({ navigation }) {
 
           <Pressable style={{ marginTop: 16 }}>
             {({ pressed }) => (
-              <Text style={[loginStyle.pBox, { fontWeight: "normal", color: pressed? "#b7b7b7ff" : "#949494"}]}>forgot password?</Text>
+              <Text style={[loginStyle.pBox, { fontWeight: "normal", color: pressed? "#b7b7b7ff" : "#949494", textDecorationLine: "underline"}]}>forgot password?</Text>
             )}
           </Pressable>
         </View>
