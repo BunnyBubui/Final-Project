@@ -13,7 +13,7 @@ export default function Select({ navigation }) {
       <View style={loginStyle.container}>
         <Text style={loginStyle.h1}>Create new Account</Text>
         <Pressable style={({pressed}) => [{opacity: pressed? 0.6 : 1}]} onPress={() => navigation.navigate("Login")}>
-          <Text style={loginStyle.p}>Already Registered? Log in here.</Text>
+          <Text style={[loginStyle.p, {textDecorationLine: "underline"}]}>Already Registered? Log in here.</Text>
         </Pressable>
 
         <View style={[loginStyle.card, { alignItems: "center" }]}>
