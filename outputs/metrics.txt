@@ -1,0 +1,3 @@
+Features: ['age', 'hypertension', 'avg_glucose_level']
+ROC-AUC: 0.8391
+PR-AUC: 0.1631
