@@ -4,9 +4,13 @@ const db = require("../middlewares/db_connection");
 const bcrypt = require("bcrypt");
 
 router.post("/signUp", (req, res) => {
-    const { username, password, confirmPassword } = req.body;
+    const { username, password, confirmPassword, type } = req.body;
     if (!username || !password || !confirmPassword) {
         return res.status(400).json({ error: "Invalid username or password.", confirm : false });
+    }
+
+    if (!type) {
+        return res.status(400).json({ error: "Invalid Type.", confirm : false });
     }
 
     if (password !== confirmPassword){
@@ -33,8 +37,8 @@ router.post("/signUp", (req, res) => {
                 return res.status(500).json({ error: "Hash error.", confirm : false });
             }
 
-            const Query = "INSERT INTO login (username, password) VALUES (?, ?)";
-            db.query(Query, [username, hashed], (err) => {
+            const Query = "INSERT INTO login (username, password, type) VALUES (?, ?)";
+            db.query(Query, [username, hashed, type], (err) => {
                 if (err) {
                     return res.status(500).json({ error: "Insert error.", confirm : false });
                 }

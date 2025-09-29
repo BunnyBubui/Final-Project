@@ -33,7 +33,8 @@ export default function Sign({ navigation }) {
         body: JSON.stringify({
           username: username,
           password: password,
-          confirmPassword: confirm
+          confirmPassword: confirm,
+          type: role
         })
       })
 
