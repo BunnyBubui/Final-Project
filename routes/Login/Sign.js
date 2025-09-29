@@ -3,6 +3,7 @@ import { View, Text, TextInput, Pressable } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRoute } from "@react-navigation/native";
 import { loginStyle } from "./Style/Login Style";
+import { getBaseURL } from "./Base";
 
 export default function Sign({ navigation }) {
   const route = useRoute();
@@ -13,7 +14,7 @@ export default function Sign({ navigation }) {
   const [confirm, setConfirm]   = useState("");
   const [err, setErr] = useState("");
 
-  const onRegister = () => {
+  const onRegister = async () => {
     if (!username.trim() || !password.trim() || !confirm.trim()) {
       setErr("กรุณากรอกข้อมูลให้ครบ");
       return;
@@ -23,7 +24,32 @@ export default function Sign({ navigation }) {
       return;
     }
     setErr("");
-    navigation.replace("Otp", { role, username });
+    try {
+      const res = await fetch(`${getBaseURL()}/api/signUp`, {
+        method: "POST",
+        headers: {
+          "Content-Type" : "application/json",
+        },
+        body: JSON.stringify({
+          username: username,
+          password: password,
+          confirmPassword: confirm
+        })
+      })
+
+      if (!res.ok){
+        setErr("ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่อีกครั้ง");
+        return;
+      }
+
+      const data = await res.json();
+      if (res.ok) {
+        navigation.replace("Otp", { role, username });
+      }
+    } catch {
+      setErr("เครือข่ายอาจมีปัญหา กรุณาลองใหม่อีกครั้ง");
+      console.log(res)
+    }
   };
 
   if (!role) {

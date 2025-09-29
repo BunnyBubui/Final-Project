@@ -1,20 +1,45 @@
 import { useState } from "react";
 import { View, Text, TextInput, Pressable } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { loginStyle } from "./Style/Login Style"; 
+import { loginStyle } from "./Style/Login Style";
+import { getBaseURL } from "./Base";
 
 function Login({ navigation }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [err, setErr] = useState("");
 
-  const onLogin = () => {
+  const onLogin = async () => {
     if (!username.trim() || !password.trim()) {
       setErr("กรุณากรอก username และ password");
       return;
     }
     setErr("");
-    navigation.replace("UserHome");
+
+    try {
+      const res = await fetch(`${getBaseURL()}/api/signIn`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: username,
+          password: password
+        })
+      });
+
+      if (!res.ok) {
+        setErr("ไม่สามารถเข้าล็อกอินได้ กรุณาลองใหม่อีกครั้ง");
+        return;
+      }
+
+      const data = await res.json();
+      if (res.ok) {
+        navigation.replace("UserHome");
+      }
+    } catch {
+      setErr("เครือข่ายอาจมีปัญหา กรุณาลองใหม่อีกครั้ง")
+    }
   };
 
   return (
@@ -101,7 +126,7 @@ function Login({ navigation }) {
 
           <Pressable style={{ marginTop: 16 }}>
             {({ pressed }) => (
-              <Text style={[loginStyle.pBox, { fontWeight: "normal", color: pressed? "#b7b7b7ff" : "#949494", textDecorationLine: "underline"}]}>forgot password?</Text>
+              <Text style={[loginStyle.pBox, { fontWeight: "normal", color: pressed ? "#b7b7b7ff" : "#949494", textDecorationLine: "underline" }]}>forgot password?</Text>
             )}
           </Pressable>
         </View>

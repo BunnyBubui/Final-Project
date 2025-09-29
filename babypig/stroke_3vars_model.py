@@ -1,8 +1,7 @@
 # ===============================
 # Stroke (3 Variables) – Full Demo
-# ใช้ตัวแปรเท่านั้น: age, hypertension, avg_glucose_level
+# ใช้ตัวแปร: age, hypertension, avg_glucose_level
 # ===============================
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -15,23 +14,15 @@ from sklearn.metrics import confusion_matrix, classification_report, roc_auc_sco
 import statsmodels.api as sm
 from statsmodels.stats.outliers_influence import variance_inflation_factor as sm_vif
 
-# -------------------------------
-# 1) โหลดข้อมูล
-# -------------------------------
-# แก้ path ตามเครื่องคุณ:
-# file_path = r"C:\Users\ASUS\Downloads\brain_stroke.csv"
 file_path = "C:/Users\mainb/Downloads/brain_stroke.csv"
 df = pd.read_csv(file_path)
 
-# ทำชื่อคอลัมน์ให้สม่ำเสมอ
 df.columns = (
     df.columns.str.strip().str.lower()
       .str.replace(" ", "_").str.replace("-", "_")
 )
-# (เผื่อบางชุดสะกดต่าง)
 df = df.rename(columns={"residencetype": "residence_type", "govtjov": "govt_job"})
 
-# ต้องมีคอลัมน์เหล่านี้
 needed = {"age", "hypertension", "avg_glucose_level", "stroke"}
 missing = [c for c in needed if c not in df.columns]
 if missing:
@@ -61,14 +52,13 @@ print(df[df["stroke"] == 1][["age", "hypertension", "avg_glucose_level"]].descri
 X = df[["age", "hypertension", "avg_glucose_level"]].copy()
 y = df["stroke"].copy()
 
-# เติมค่าว่างแบบเรียบง่าย (numeric → median, binary → mode)
 if X["age"].isna().any():
     X["age"] = X["age"].fillna(X["age"].median())
 if X["avg_glucose_level"].isna().any():
     X["avg_glucose_level"] = X["avg_glucose_level"].fillna(X["avg_glucose_level"].median())
 if X["hypertension"].isna().any():
     X["hypertension"] = X["hypertension"].fillna(X["hypertension"].mode().iloc[0])
-# ให้แน่ใจว่า hypertension เป็น 0/1
+
 X["hypertension"] = X["hypertension"].astype(int)
 
 # -------------------------------
@@ -108,10 +98,9 @@ if "avg_glucose_level" in params.index:
     print(f"OR ต่อ +10 หน่วยกลูโคส ≈ {np.exp(10 * params['avg_glucose_level']):.3f}")
 
 # -------------------------------
-# 6) ตรวจ Multicollinearity (เฉพาะตัวเลขต่อเนื่อง)
-#    *โดยทั่วไปคำนวณ VIF เฉพาะ continuous (age, avg_glucose_level)
+# 6) ตรวจ Multicollinearity
 # -------------------------------
-num_for_vif = X_train[["age", "avg_glucose_level"]].copy()
+num_for_vif = X_train[["age", "avg_glucose_level","hypertension"]].copy()
 num_for_vif = sm.add_constant(num_for_vif)
 vif_rows = []
 for i, col in enumerate(num_for_vif.columns):
@@ -121,7 +110,7 @@ for i, col in enumerate(num_for_vif.columns):
         "VIF": sm_vif(num_for_vif.values, i)
     })
 vif_df = pd.DataFrame(vif_rows)
-print("\n=== VIF (เฉพาะตัวเลขต่อเนื่อง) ===")
+print("\n=== VIF Result ===")
 print(vif_df.to_string(index=False))
 
 # -------------------------------
@@ -130,7 +119,7 @@ print(vif_df.to_string(index=False))
 clf = LogisticRegression(
     solver="liblinear",
     max_iter=2000,
-    class_weight="balanced"  # แนะนำเพราะ stroke มักเป็น class น้อย
+    class_weight="balanced" 
 )
 clf.fit(X_train, y_train)
 
