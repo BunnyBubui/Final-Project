@@ -63,7 +63,7 @@ export default function VehicleUpload({ navigation, route }) {
       return;
     }
 
-    navigation.replace("UserHome", {
+    navigation.replace("WorkerHome", {
       vehicle: {
         regNo,
         plate,

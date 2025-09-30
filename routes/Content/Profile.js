@@ -56,14 +56,6 @@ export default function Profile({ navigation }) {
                         <View style={ProfileStyle.card}>
                             <Text style={[ProfileStyle.labelBold, { marginBottom: 8 }]}>ประวัติการใช้งาน</Text>
 
-                            <View style={ProfileStyle.historyRow}>
-                                <View style={{ flex: 1 }}>
-                                    <Text style={ProfileStyle.historyTitle}>BUN GO</Text>
-                                    <Text style={ProfileStyle.historySub}>ST → โซดา</Text>
-                                </View>
-                                <Text style={ProfileStyle.historyPrice}>20 THB</Text>
-                            </View>
-
                             <View style={ProfileStyle.divider} />
 
                             <Text style={ProfileStyle.historyTitle}>BUN MARKET</Text>
@@ -72,11 +64,6 @@ export default function Profile({ navigation }) {
                             <View style={ProfileStyle.divider} />
 
                             <Text style={ProfileStyle.historyTitle}>BUN FOOD</Text>
-                            <Text style={ProfileStyle.historyDash}>—</Text>
-
-                            <View style={ProfileStyle.divider} />
-
-                            <Text style={ProfileStyle.historyTitle}>BUN CARRY</Text>
                             <Text style={ProfileStyle.historyDash}>—</Text>
                         </View>
                     </View>

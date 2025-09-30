@@ -2,11 +2,27 @@ import { View, Text, Pressable } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { FooterStyle } from './Style/FooterStyle';
 import { House, CircleUserRound, Settings } from 'lucide-react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useState, useEffect } from 'react';
 
 const Footer = ({ navigation }) => {
+  const [profile, setProfile] = useState({})
+    useEffect(() => {
+        const loadProfile = async () => {
+            try {
+                const storage = await AsyncStorage.getItem("profile");
+                setProfile(JSON.parse(storage));
+            } catch {
+                console.log("Isn't get item.")
+            }
+        }
+
+        loadProfile();
+    }, []);
+
   const route = useRoute();
   const FooterButton = [
-    { name: "Home", navigate: "UserHome", icon: House },
+    { name: "Home", navigate: profile === "customer"? "UserHome" : "WorkerHome", icon: House },
     { name: "Profile", navigate: "Profile", icon: CircleUserRound },
     { name: "Setting", navigate: "Setting", icon: Settings }
   ];

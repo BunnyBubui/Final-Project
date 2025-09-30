@@ -10,6 +10,7 @@ app.use(express.urlencoded());
 app.use("/api", require("./routes/signUp"));
 app.use("/api", require("./routes/signIn"));
 app.use("/api", require("./routes/member"));
+app.use("/api", require("./routes/market"));
 app.use("/api", require("./middlewares/sessionAuth"));
 
 cron.schedule("0 * * * *", () => {

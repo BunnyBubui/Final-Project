@@ -58,7 +58,7 @@ export default function KycUpload({ navigation }) {
       return;
     }
 
-    navigation.navigate("VehicleUpload", {
+    navigation.navigate("WorkerHome", {
       kyc: { idNumber, idExpire, address, location, income, idCardImage, idCardDoc },
     });
   };
