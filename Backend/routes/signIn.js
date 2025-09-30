@@ -4,38 +4,68 @@ const db = require("../middlewares/db_connection");
 const bcrypt = require("bcrypt");
 
 router.post("/signIn", (req, res) => {
-    const { username, password } = req.body;
-    if (!username || !password) {
-        return res.status(400).json({ error: "Invalid username or password.", confirm : false});
+  const { username, password } = req.body || {};
+  if (!username || !password) {
+    return res.status(400).json({ confirm: false, error: "Invalid username or password." });
+  }
+
+  const qFindUser = "SELECT id, username, password FROM login WHERE username = ? LIMIT 1";
+  db.query(qFindUser, [username], (err, users) => {
+    if (err) return res.status(500).json({ confirm: false, error: "Server error." });
+    if (users.length === 0) {
+      return res.status(401).json({ confirm: false, error: "Invalid username or password." });
     }
 
-    const Query = "SELECT username, password FROM login WHERE username = ?";
-    db.query(Query, [username], (err, results) => {
-        if (err) {
-            return res.status(500).json({ error : "Error server.", confirm : false});
-        }
+    const user = users[0];
 
-        if (!results.length > 0){
-           return res.status(501).json({ error : "Can't find your username or password. Please try again.", confirm : false}); 
-        }
+    bcrypt.compare(password, user.password, (err, isMatch) => {
+      if (err) return res.status(500).json({ confirm: false, error: "Server error." });
+      if (!isMatch) {
+        return res.status(401).json({ confirm: false, error: "Invalid username or password." });
+      }
 
-        const user = results[0];
-        
-        if (username !== user.username){
-            return res.status(402).json({error : "Invalid username or password.", confirm : false});
+      const qFindType = "SELECT type FROM member WHERE username = ? LIMIT 1";
+      db.query(qFindType, [username], (err, roles) => {
+        if (err) return res.status(500).json({ confirm: false, error: "Server error." });
+        if (roles.length === 0) {
+          return res.status(404).json({ confirm: false, error: "Invalid username." });
         }
-        bcrypt.compare(password, user.password, (err, isMatch) => {
-            if (err) {
-                return res.status(500).json({error : "Server error.", confirm : false});
+        const role = roles[0].type;
+
+        const qUpsertSession = `
+          INSERT INTO sessions (username, start_at, end_at)
+          VALUES (?, NOW(), DATE_ADD(NOW(), INTERVAL 60 MINUTE))
+          ON DUPLICATE KEY UPDATE
+            start_at = VALUES(start_at),
+            end_at   = VALUES(end_at)
+        `;
+        db.query(qUpsertSession, [username], (err2) => {
+          if (err2) return res.status(500).json({ confirm: false, error: "Session error." });
+
+          const qGetSession = "SELECT username, start_at, end_at FROM sessions WHERE username = ? LIMIT 1";
+          db.query(qGetSession, [username], (err3, sRows) => {
+            if (err3) return res.status(500).json({ confirm: false, error: "Server error." });
+            if (sRows.length === 0) {
+              return res.status(500).json({ confirm: false, error: "Session not found." });
             }
 
-            if (!isMatch) {
-                return res.status(401).json({error : "Invalid username or password.", confirm : false});
-            }
-
-            return res.status(200).json({status : "Sucess!", confirm : true});
-        })
-    })
-})
+            const session = sRows[0];
+            return res.status(200).json({
+              status: "Success!",
+              confirm: true,
+              result: role,
+              sessions: {
+                username: session.username,
+                start_at: session.start_at,
+                end_at: session.end_at,
+              },
+              user: { id: user.id, username: user.username }
+            });
+          });
+        });
+      });
+    });
+  });
+});
 
 module.exports = router;

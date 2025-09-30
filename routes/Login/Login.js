@@ -1,13 +1,53 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { View, Text, TextInput, Pressable } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { loginStyle } from "./Style/Login Style";
-import { getBaseURL } from "./Base";
+import { getBaseURL } from "./BaseEndpoint";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function Login({ navigation }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [err, setErr] = useState("");
+
+  useEffect(() => {
+  const sessionAuth = async () => {
+    try {
+      const storage = await AsyncStorage.getItem("profile");
+      if (!storage) return;
+
+      const profile = JSON.parse(storage);
+
+      const res = await fetch(`${getBaseURL()}/api/sessionAuth`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: profile.username })
+      });
+
+      // ถ้าไม่โอเค ลบโปรไฟล์ทิ้ง (session หมดอายุ/ไม่พบ)
+      if (!res.ok) {
+        await AsyncStorage.removeItem("profile");
+        return;
+      }
+
+      const data = await res.json();
+      if (data.confirm) {
+        // ถ้าอยาก sync end_at ล่าสุดก็อัปเดตไว้ได้
+        await AsyncStorage.setItem(
+          "profile",
+          JSON.stringify({ ...profile, end_at: data.end_at })
+        );
+        navigation.replace(profile.type === "customer" ? "UserHome" : "WorkerHome");
+      }
+    } catch (e) {
+      console.log("❌ sessionAuth error", e);
+      // เงียบไว้ก่อน ให้ผู้ใช้ล็อกอินใหม่
+    }
+  };
+
+  sessionAuth();
+}, [navigation]);
+
 
   const onLogin = async () => {
     if (!username.trim() || !password.trim()) {
@@ -19,13 +59,8 @@ function Login({ navigation }) {
     try {
       const res = await fetch(`${getBaseURL()}/api/signIn`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: username,
-          password: password
-        })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
       });
 
       if (!res.ok) {
@@ -35,20 +70,21 @@ function Login({ navigation }) {
 
       const data = await res.json();
       if (res.ok) {
-        navigation.replace("UserHome");
+        await AsyncStorage.setItem("profile", JSON.stringify({
+          username: username,
+          type: data.result,
+          end_at: data.sessions.end_at
+        }));
+
+        navigation.replace(data.result === "customer" ? "UserHome" : "WorkerHome");
       }
     } catch {
-      setErr("เครือข่ายอาจมีปัญหา กรุณาลองใหม่อีกครั้ง")
+      setErr("เครือข่ายอาจมีปัญหา กรุณาลองใหม่อีกครั้ง");
     }
   };
 
   return (
-    <LinearGradient
-      colors={["#4863a1", "#bd7ae1"]}
-      start={{ x: 0, y: 1 }}
-      end={{ x: 0, y: 0 }}
-      style={loginStyle.bg}
-    >
+    <LinearGradient colors={["#4863a1", "#bd7ae1"]} start={{ x: 0, y: 1 }} end={{ x: 0, y: 0 }} style={loginStyle.bg}>
       <View style={loginStyle.container}>
         <Text style={loginStyle.h1}>Login</Text>
         <Text style={loginStyle.p}>Sign in to continue.</Text>
@@ -76,10 +112,7 @@ function Login({ navigation }) {
 
           {!!err && <Text style={loginStyle.error}>{err}</Text>}
 
-          <Pressable
-            onPress={onLogin}
-            hitSlop={8}
-          >
+          <Pressable onPress={onLogin} hitSlop={8}>
             {({ pressed }) => (
               <LinearGradient
                 colors={[pressed ? "#f3a66fff" : "#f19a5c", pressed ? "#fde386ff" : "#f9db6f"]}
@@ -87,14 +120,7 @@ function Login({ navigation }) {
                 end={{ x: 1, y: 0 }}
                 style={loginStyle.btnGrad}
               >
-                <Text
-                  style={[
-                    loginStyle.pBox,
-                    { color: pressed ? "#fff" : "#ffffffff" },
-                  ]}
-                >
-                  Login
-                </Text>
+                <Text style={[loginStyle.pBox, { color: "#fff" }]}>Login</Text>
               </LinearGradient>
             )}
           </Pressable>
@@ -102,31 +128,19 @@ function Login({ navigation }) {
           <Pressable
             style={({ pressed }) => [
               loginStyle.btnBase,
-              {
-                marginTop: 8,
-                borderWidth: 1,
-                borderColor: pressed ? "#fff" : "#ff6739ff",
-                backgroundColor: pressed ? "#ffa149ff" : "#fff"
-              },
+              { marginTop: 8, borderWidth: 1, borderColor: pressed ? "#fff" : "#ff6739ff", backgroundColor: pressed ? "#ffa149ff" : "#fff" }
             ]}
             onPress={() => navigation.navigate("Select")}
             hitSlop={8}
           >
-            {({ pressed }) => (
-              <Text
-                style={[
-                  loginStyle.pBox,
-                  { color: pressed ? "#fff" : "#ff6739ff" },
-                ]}
-              >
-                Sign up
-              </Text>
-            )}
+            {({ pressed }) => <Text style={[loginStyle.pBox, { color: pressed ? "#fff" : "#ff6739ff" }]}>Sign up</Text>}
           </Pressable>
 
           <Pressable style={{ marginTop: 16 }}>
             {({ pressed }) => (
-              <Text style={[loginStyle.pBox, { fontWeight: "normal", color: pressed ? "#b7b7b7ff" : "#949494", textDecorationLine: "underline" }]}>forgot password?</Text>
+              <Text style={[loginStyle.pBox, { fontWeight: "normal", color: pressed ? "#b7b7b7ff" : "#949494", textDecorationLine: "underline" }]}>
+                forgot password?
+              </Text>
             )}
           </Pressable>
         </View>

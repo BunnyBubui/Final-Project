@@ -2,7 +2,7 @@ import { IndexStyle } from "./Style/IndexStyle";
 import { View, SafeAreaView } from 'react-native';
 import { LinearGradient } from "expo-linear-gradient";
 import Footer from "./Footer";
-const Index = ({ children, navigation }) => {
+const Index = ({ children, navigation, indexStyle = true }) => {
     return (
         <SafeAreaView style={IndexStyle.root}>
             <LinearGradient
@@ -11,7 +11,7 @@ const Index = ({ children, navigation }) => {
                 end={{ x: 0, y: 0 }}  
                 style={IndexStyle.root}
             >
-                <View style={IndexStyle.container}>
+                <View style={indexStyle && IndexStyle.container}>
                     {children}
                 </View>
             </LinearGradient>

@@ -1,17 +1,39 @@
 import { StyleSheet } from "react-native";
 
-const IndexStyle = StyleSheet.create({
-    root: {
-        flex: 1,
-        backgroundColor: "#EEF0F7",
+const SettingStyle = StyleSheet.create({
+    page: {
+        flexGrow: 1,
+        justifyContent: "flex-start",
+        alignItems: "center",
+        padding: 20,
     },
-    container: {
-        flex: 1,
+    title: {
+        fontSize: 20,
+        fontWeight: "700",
+        marginBottom: 30,
+        backgroundColor: "#fff",
+        paddingVertical: 6,
         paddingHorizontal: 20,
-        paddingVertical: 10,
-        paddingTop: 30,
-        padding: 10
+        borderRadius: 20,
+        overflow: "hidden",
+    },
+    menuBtn: {
+        width: "90%",
+        backgroundColor: "#fff",
+        borderRadius: 20,
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        marginBottom: 14,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        elevation: 4,
+    },
+    menuText: {
+        fontSize: 14,
+        fontWeight: "600",
+        color: "#000",
     },
 });
 
-export { IndexStyle };
+export { SettingStyle };

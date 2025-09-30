@@ -3,10 +3,12 @@ import { View, Text, TextInput, Pressable } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRoute } from "@react-navigation/native";
 import { loginStyle } from "./Style/Login Style";
+import { getBaseURL } from "./BaseEndpoint";
 
 export default function OTP({ navigation }) {
     const route = useRoute();
     const role = route.params?.role ?? null;
+    const username = route.params?.username ?? null;
 
     const [phone, setPhone] = useState("");
     const [otp, setOtp] = useState("");
@@ -61,7 +63,7 @@ export default function OTP({ navigation }) {
         startCountdown(30);
     };
 
-    const handleConfirm = () => {
+    const handleConfirm = async () => {
         setErr("");
         if (!otp.trim()) {
             setErr("กรุณากรอกรหัส OTP");
@@ -70,6 +72,41 @@ export default function OTP({ navigation }) {
         if (otp !== mockOtp) {
             setErr("รหัส OTP ไม่ถูกต้อง");
             return;
+        }
+
+        try {
+            const res = await fetch(`${getBaseURL()}/api/member`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    username: username,
+                    type: role,
+                    phone: phone
+                })
+            })
+
+            if (!res.ok) {
+                setErr("ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่อีกครั้ง");
+                return;
+            }
+
+            if (res.ok) {
+                try {
+                    await AsyncStorage.setItem("profile", JSON.stringify({
+                        username: username,
+                        type: role
+                    }));
+                    console.log("✅ ข้อมูลผู้ใช้ถูกบันทึกแล้ว");
+                } catch (err) {
+                    console.error("❌ บันทึกข้อมูลล้มเหลว", err);
+                }
+                navigation.replace("Otp", { role, username });
+            }
+        } catch {
+            setErr("เครือข่ายอาจมีปัญหา กรุณาลองใหม่อีกครั้ง");
+            console.log(res)
         }
 
         if (role === "customer") {

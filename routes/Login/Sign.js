@@ -3,15 +3,15 @@ import { View, Text, TextInput, Pressable } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRoute } from "@react-navigation/native";
 import { loginStyle } from "./Style/Login Style";
-import { getBaseURL } from "./Base";
+import { getBaseURL } from "./BaseEndpoint";
 
 export default function Sign({ navigation }) {
   const route = useRoute();
-  const role = route.params?.role ?? null; 
+  const role = route.params?.role ?? null;
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [confirm, setConfirm]   = useState("");
+  const [confirm, setConfirm] = useState("");
   const [err, setErr] = useState("");
 
   const onRegister = async () => {
@@ -28,22 +28,20 @@ export default function Sign({ navigation }) {
       const res = await fetch(`${getBaseURL()}/api/signUp`, {
         method: "POST",
         headers: {
-          "Content-Type" : "application/json",
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           username: username,
           password: password,
           confirmPassword: confirm,
-          type: role
         })
       })
 
-      if (!res.ok){
+      if (!res.ok) {
         setErr("ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่อีกครั้ง");
         return;
       }
 
-      const data = await res.json();
       if (res.ok) {
         navigation.replace("Otp", { role, username });
       }
@@ -55,10 +53,10 @@ export default function Sign({ navigation }) {
 
   if (!role) {
     return (
-      <LinearGradient colors={["#4863a1", "#bd7ae1"]} start={{x:0,y:1}} end={{x:0,y:0}} style={loginStyle.bg}>
+      <LinearGradient colors={["#4863a1", "#bd7ae1"]} start={{ x: 0, y: 1 }} end={{ x: 0, y: 0 }} style={loginStyle.bg}>
         <View style={loginStyle.container}>
           <Text style={loginStyle.h1}>Choose your role first</Text>
-          <Pressable onPress={() => navigation.replace("Select")} style={({pressed}) => [{opacity: pressed? 0.8 : 1}]}>
+          <Pressable onPress={() => navigation.replace("Select")} style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}>
             <Text style={loginStyle.p}>← Back to role selection</Text>
           </Pressable>
         </View>
@@ -67,13 +65,13 @@ export default function Sign({ navigation }) {
   }
 
   return (
-    <LinearGradient colors={["#4863a1", "#bd7ae1"]} start={{x:0,y:1}} end={{x:0,y:0}} style={loginStyle.bg}>
+    <LinearGradient colors={["#4863a1", "#bd7ae1"]} start={{ x: 0, y: 1 }} end={{ x: 0, y: 0 }} style={loginStyle.bg}>
       <View style={loginStyle.container}>
         <Text style={loginStyle.h1}>
           {role === "customer" ? "Register as Customer" : "Register as Worker"}
         </Text>
-        <Pressable style={({pressed}) => [{opacity: pressed? 0.6 : 1}]} onPress={() => navigation.navigate("Login")}>
-          <Text style={[loginStyle.p, {textDecorationLine: "underline"}]}>Already Registered? Log in here.</Text>
+        <Pressable style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]} onPress={() => navigation.navigate("Login")}>
+          <Text style={[loginStyle.p, { textDecorationLine: "underline" }]}>Already Registered? Log in here.</Text>
         </Pressable>
 
         <View style={loginStyle.card}>
@@ -122,7 +120,7 @@ export default function Sign({ navigation }) {
             )}
           </Pressable>
 
-          <Pressable onPress={() => navigation.replace("Select")} style={({pressed}) => [{opacity: pressed? 0.8 : 1, marginTop: 10}]}>
+          <Pressable onPress={() => navigation.replace("Select")} style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1, marginTop: 10 }]}>
             <Text style={[loginStyle.p, { color: "#111" }]}>← Change role</Text>
           </Pressable>
         </View>
