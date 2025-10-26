@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ScrollView, Alert } from "react-native";
+import { Text, Pressable, ScrollView } from "react-native";
 import Index from "./Index";
 import { SettingStyle } from "./Style/Setting";
 import { User, Grid, FileText, MessageCircle, LogOut } from "lucide-react-native";
@@ -7,9 +7,9 @@ import { Logout } from "./Logout";
 const Setting = ({ navigation }) => {
   const menus = [
     { label: "Profile", icon: <User color="#000" size={30} />, nav: "Profile" },
-    { label: "App", icon: <Grid color="#000" size={30} />, nav: "App" },
-    { label: "Report", icon: <FileText color="#000" size={30} />, nav: "Report" },
-    { label: "Contact us", icon: <MessageCircle color="#000" size={30} />, nav: "Contact" },
+    { label: "App", icon: <Grid color="#000" size={30} />, nav: "" },
+    { label: "Report", icon: <FileText color="#000" size={30} />, nav: "" },
+    { label: "Contact us", icon: <MessageCircle color="#000" size={30} />, nav: "" },
   ];
 
   

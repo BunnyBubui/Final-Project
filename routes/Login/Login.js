@@ -24,7 +24,6 @@ function Login({ navigation }) {
         body: JSON.stringify({ username: profile.username })
       });
 
-      // ถ้าไม่โอเค ลบโปรไฟล์ทิ้ง (session หมดอายุ/ไม่พบ)
       if (!res.ok) {
         await AsyncStorage.removeItem("profile");
         return;
@@ -32,7 +31,6 @@ function Login({ navigation }) {
 
       const data = await res.json();
       if (data.confirm) {
-        // ถ้าอยาก sync end_at ล่าสุดก็อัปเดตไว้ได้
         await AsyncStorage.setItem(
           "profile",
           JSON.stringify({ ...profile, end_at: data.end_at })
@@ -41,7 +39,6 @@ function Login({ navigation }) {
       }
     } catch (e) {
       console.log("❌ sessionAuth error", e);
-      // เงียบไว้ก่อน ให้ผู้ใช้ล็อกอินใหม่
     }
   };
 

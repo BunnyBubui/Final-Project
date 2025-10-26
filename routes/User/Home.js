@@ -5,11 +5,11 @@ import { CaseUpper, Users, Utensils } from "lucide-react-native";
 import { HomeStyle } from "./Style/HomeStyle";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+
 const ORANGE = "#ff7a00";
 
 export default function UserHome({ navigation }) {
     const [profile, setProfile] = useState({})
-
     useEffect(() => {
         const loadProfile = async () => {
             try {

@@ -1,4 +1,3 @@
-// OTP.js
 import { useEffect, useRef, useState } from "react";
 import { View, Text, TextInput, Pressable } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
@@ -64,7 +63,6 @@ export default function OTP({ navigation }) {
   const handleConfirm = async () => {
     setErr("");
 
-    // กรองให้เหลือเฉพาะตัวเลข
     const onlyDigits = otp.replace(/\D/g, "");
     if (!onlyDigits) {
       setErr("กรุณากรอกรหัส OTP");
@@ -91,13 +89,11 @@ export default function OTP({ navigation }) {
         return;
       }
 
-      // บันทึกโปรไฟล์
       await AsyncStorage.setItem(
         "profile",
         JSON.stringify({ username, type: role, phone })
       );
 
-      // ไปหน้าถัดไปครั้งเดียวพอ แล้ว return
       if (role === "customer") {
         navigation.replace("UserHome", { role, phone, username });
       } else {

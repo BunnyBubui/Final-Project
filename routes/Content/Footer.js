@@ -22,7 +22,7 @@ const Footer = ({ navigation }) => {
 
   const route = useRoute();
   const FooterButton = [
-    { name: "Home", navigate: profile === "customer"? "UserHome" : "WorkerHome", icon: House },
+    { name: "Home", navigate: profile.type === "customer"? "UserHome" : "WorkerHome", icon: House },
     { name: "Profile", navigate: "Profile", icon: CircleUserRound },
     { name: "Setting", navigate: "Setting", icon: Settings }
   ];
