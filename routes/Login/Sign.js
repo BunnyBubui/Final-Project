@@ -43,11 +43,11 @@ export default function Sign({ navigation }) {
       }
 
       if (res.ok) {
-        navigation.replace("Otp", { role, username });
+        const data = await res.json();
+        navigation.replace("Otp", { role, username, token: data.token });
       }
     } catch {
       setErr("เครือข่ายอาจมีปัญหา กรุณาลองใหม่อีกครั้ง");
-      console.log(res)
     }
   };
 

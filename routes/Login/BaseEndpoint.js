@@ -1,11 +1,2 @@
-const { Platform } = require("react-native");
-
-const getBaseURL = () => {
-  //Dev ฝั่ง Web
-  if (Platform.OS === "web") return "http://localhost:3000";
-  
-  //Dev ฝั่ง Mobile ใช้ WIFI Lan ในเครื่อง เมื่อรัน node server.js ใน Backend เรียบร้อยแล้ว
-  return "http://192.168.1.9:3000";
-};
-
-export {getBaseURL}
+import { Platform } from "react-native";
+export const getBaseURL = () => process.env.EXPO_PUBLIC_API_URL || (Platform.OS === "android" ? "http://10.0.2.2:3000" : "http://localhost:3000");

@@ -1,3 +1,4 @@
+import { authFetch } from "../Login/authFetch";
 import { useState, useEffect, useCallback } from "react";
 import {View,Text,TextInput,Pressable,FlatList,RefreshControl,} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
@@ -41,7 +42,7 @@ export default function WorkerFood({ navigation }) {
       const url = `${getBaseURL()}/api/read_market?username=${encodeURIComponent(
         profile.username
       )}`;
-      const res = await fetch(url);
+      const res = await authFetch(url);
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok || data?.confirm === false) {
@@ -112,7 +113,7 @@ export default function WorkerFood({ navigation }) {
 
     setLoading(true);
     try {
-      const res = await fetch(`${getBaseURL()}/api/add_market`, {
+      const res = await authFetch(`${getBaseURL()}/api/add_market`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -140,7 +141,7 @@ export default function WorkerFood({ navigation }) {
 
   const handleDelete = async (id) => {
     try {
-      const res = await fetch(`${getBaseURL()}/api/delete_market/${id}`, {
+      const res = await authFetch(`${getBaseURL()}/api/delete_market/${id}`, {
         method: "DELETE",
       });
       const data = await res.json();
@@ -164,7 +165,7 @@ export default function WorkerFood({ navigation }) {
   const saveUpdate = async () => {
     if (!editingId) return;
     try {
-      const res = await fetch(`${getBaseURL()}/api/update_market/${editingId}`, {
+      const res = await authFetch(`${getBaseURL()}/api/update_market/${editingId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

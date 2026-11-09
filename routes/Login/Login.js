@@ -20,8 +20,7 @@ function Login({ navigation }) {
 
       const res = await fetch(`${getBaseURL()}/api/sessionAuth`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: profile.username })
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${profile.token || ""}` }
       });
 
       if (!res.ok) {
@@ -67,10 +66,12 @@ function Login({ navigation }) {
 
       const data = await res.json();
       if (res.ok) {
+        if (!data.result) { setErr("กรุณาทำขั้นตอนสมัครสมาชิกให้ครบก่อนเข้าสู่ระบบ"); return; }
         await AsyncStorage.setItem("profile", JSON.stringify({
           username: username,
           type: data.result,
-          end_at: data.sessions.end_at
+          end_at: data.sessions.end_at,
+          token: data.token
         }));
 
         navigation.replace(data.result === "customer" ? "UserHome" : "WorkerHome");

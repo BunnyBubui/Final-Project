@@ -1,17 +1,10 @@
 const mysql = require("mysql2");
-const db = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "Bb.1153708",
-    database: "wustudents",
+const db = mysql.createPool({
+  host: process.env.DB_HOST || "127.0.0.1",
+  port: Number(process.env.DB_PORT || 3306),
+  user: process.env.DB_USER || "root",
+  password: process.env.DB_PASSWORD || "",
+  database: process.env.DB_NAME || "wustudents",
+  connectionLimit: 10,
 });
-
-db.connect((err) => {
-    if (err) {
-        console.log("Database isn't connect.");
-    } else {
-        console.log("Database is connect.");
-    }
-});
-
 module.exports = db;

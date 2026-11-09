@@ -1,14 +1,17 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../middlewares/db_connection");
+const { authenticate } = require("../middlewares/authStore");
+router.use(authenticate);
 
 router.post("/add_market", (req, res) => {
-    const { username, item_name, item_type, price, quantity } = req.body;
+    const { item_name, item_type, price, quantity } = req.body;
+    const username = req.auth.username;
 
     if (!username || !item_name || !item_type || price === undefined || quantity === undefined) {
         return res.status(400).json({ error: "Invalid.", confirm: false });
     }
-    if (Number.isNaN(Number(price)) || Number.isNaN(Number(quantity))) {
+    if (!Number.isFinite(Number(price)) || !Number.isInteger(Number(quantity)) || Number(price) < 0) {
         return res.status(400).json({ error: "Price/Quantity must be numeric.", confirm: false });
     }
     if (Number(quantity) < 0) {
@@ -34,7 +37,7 @@ router.post("/add_market", (req, res) => {
 });
 
 router.get("/read_market", (req, res) => {
-    const { username } = req.query;
+    const username = req.auth.username;
     if (!username) {
         return res.status(400).json({ error: "Invalid.", confirm: false });
     }
@@ -66,7 +69,7 @@ router.put("/update_market/:id", (req, res) => {
     if (!item_name || !item_type || price === undefined || quantity === undefined) {
         return res.status(400).json({ error: "Invalid.", confirm: false });
     }
-    if (Number.isNaN(Number(price)) || Number.isNaN(Number(quantity))) {
+    if (!Number.isFinite(Number(price)) || !Number.isInteger(Number(quantity)) || Number(price) < 0) {
         return res.status(400).json({ error: "Price/Quantity must be numeric.", confirm: false });
     }
     if (Number(quantity) < 0) {
@@ -76,9 +79,9 @@ router.put("/update_market/:id", (req, res) => {
     const sql = `
     UPDATE market
       SET item_name = ?, item_type = ?, price = ?, quantity = ?
-    WHERE id = ?
+    WHERE id = ? AND username = ?
   `;
-    db.query(sql, [item_name, item_type, Number(price), Number(quantity), id], (err, result) => {
+    db.query(sql, [item_name, item_type, Number(price), Number(quantity), id, req.auth.username], (err, result) => {
         if (err) {
             console.error("DB Error:", err);
             return res.status(500).json({ error: "Database error.", confirm: false });
@@ -95,8 +98,8 @@ router.delete("/delete_market/:id", (req, res) => {
     if (!id) {
         return res.status(400).json({ error: "Invalid id.", confirm: false });
     }
-    const sql = `DELETE FROM market WHERE id = ?`;
-    db.query(sql, [id], (err, result) => {
+    const sql = `DELETE FROM market WHERE id = ? AND username = ?`;
+    db.query(sql, [id, req.auth.username], (err, result) => {
         if (err) {
             console.error("DB Error:", err);
             return res.status(500).json({ error: "Database error.", confirm: false });

@@ -10,6 +10,7 @@ export default function OTP({ navigation }) {
   const route = useRoute();
   const role = route.params?.role ?? null;
   const username = route.params?.username ?? null;
+  const token = route.params?.token ?? null;
 
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
@@ -76,7 +77,7 @@ export default function OTP({ navigation }) {
     try {
       const res = await fetch(`${getBaseURL()}/api/member`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token || ""}` },
         body: JSON.stringify({
           username,
           type: role,
@@ -91,7 +92,7 @@ export default function OTP({ navigation }) {
 
       await AsyncStorage.setItem(
         "profile",
-        JSON.stringify({ username, type: role, phone })
+        JSON.stringify({ username, type: role, phone, token })
       );
 
       if (role === "customer") {

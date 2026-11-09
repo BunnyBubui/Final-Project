@@ -1,3 +1,4 @@
+import { authFetch } from "../Login/authFetch";
 import { useState, useEffect, useCallback } from "react";
 import {View,Text,Pressable,FlatList,RefreshControl,Alert} from "react-native";
 import Index from "../Content/Index";
@@ -14,7 +15,7 @@ export default function UserFood({ navigation }) {
   const loadFoods = useCallback(async () => {
     try {
       setRefreshing(true);
-      const res = await fetch(`${getBaseURL()}/api/all_market`);
+      const res = await authFetch(`${getBaseURL()}/api/all_market`);
       const data = await res.json().catch(() => ({}));
       if (!res.ok || data?.confirm === false) {
         Alert.alert("Error", data?.error || "โหลดรายการอาหารไม่สำเร็จ");
@@ -61,7 +62,7 @@ export default function UserFood({ navigation }) {
           text: "ซื้อเลย",
           onPress: async () => {
             try {
-              const res = await fetch(`${getBaseURL()}/api/update_market/${item.id}`, {
+              const res = await authFetch(`${getBaseURL()}/api/update_market/${item.id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

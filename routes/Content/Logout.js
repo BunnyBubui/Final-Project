@@ -20,14 +20,13 @@ const Logout = async (navigation) => {
 
   try {
     const stored = await AsyncStorage.getItem("profile");
-    const username = stored ? JSON.parse(stored)?.username : null;
+    const token = stored ? JSON.parse(stored)?.token : null;
 
-    if (username) {
+    if (token) {
       try {
         await fetch(`${getBaseURL()}/api/logout`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username }),
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         });
       } catch {
       }
